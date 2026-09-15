@@ -1,39 +1,30 @@
 import { Metadata } from "next"
 
-import { parseOptionValueIds } from "@lib/util/product-option-filters"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import StoreTemplate from "@modules/store/templates"
+import { storeConfig } from "@/config"
+import { ProductListing } from "@modules/store/templates/product-listing"
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Explore all of our products.",
+  title: "Shop all",
+  description: `Explore the full ${storeConfig.brand.name} range.`,
 }
 
-type StorePageSearchParams = Record<string, string | string[] | undefined> & {
-  sortBy?: SortOptions
-  page?: string
-  optionValueIds?: string | string[]
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+  params: Promise<{ countryCode: string }>
 }
 
-type Params = {
-  searchParams: Promise<StorePageSearchParams>
-  params: Promise<{
-    countryCode: string
-  }>
-}
-
-export default async function StorePage(props: Params) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
-  const { sortBy, page } = searchParams
-  const optionValueIds = parseOptionValueIds(searchParams)
+export default async function StorePage(props: Props) {
+  const [params, searchParams] = await Promise.all([
+    props.params,
+    props.searchParams,
+  ])
 
   return (
-    <StoreTemplate
-      sortBy={sortBy}
-      page={page}
+    <ProductListing
       countryCode={params.countryCode}
-      optionValueIds={optionValueIds}
+      searchParams={searchParams}
+      title="Shop all"
+      description={`Explore the full ${storeConfig.brand.name} range.`}
     />
   )
 }

@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
 
+import { Skeleton } from "@/components/ui/skeleton"
 import VerifyAccount from "@modules/account/components/verify-account"
 
 export const metadata: Metadata = {
@@ -10,16 +11,14 @@ export const metadata: Metadata = {
 
 export default function VerifyAccountPage() {
   return (
-    <div className="w-full flex justify-center px-8 py-12">
-      <Suspense
-        fallback={
-          <p className="text-base-regular text-ui-fg-base">
-            Verifying your email...
-          </p>
-        }
-      >
-        <VerifyAccount />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="content-container py-16">
+          <Skeleton className="mx-auto h-8 w-48" />
+        </div>
+      }
+    >
+      <VerifyAccount />
+    </Suspense>
   )
 }

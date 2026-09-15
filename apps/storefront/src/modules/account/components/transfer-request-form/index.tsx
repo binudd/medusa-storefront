@@ -1,80 +1,47 @@
 "use client"
-import { createTransferRequest } from "@lib/data/orders"
-import { CheckCircleMiniSolid, XCircleSolid } from "@medusajs/icons"
-import { Heading, IconButton, Input, Text } from "@modules/common/components/ui"
+
 import { useActionState } from "react"
-// TODO: Re-add Toaster component when needed
+
+import { createTransferRequest } from "@lib/data/orders"
+import { Input } from "@/components/ui/input"
+import { ErrorMessage } from "@/components/common/error-message"
+import { Field } from "@/components/commerce/address-fields"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import { useEffect, useState } from "react"
 
 export default function TransferRequestForm() {
-  const [showSuccess, setShowSuccess] = useState(false)
-
   const [state, formAction] = useActionState(createTransferRequest, {
     success: false,
     error: null,
     order: null,
   })
 
-  useEffect(() => {
-    if (state.success && state.order) {
-      setShowSuccess(true)
-    }
-  }, [state.success, state.order])
-
   return (
-    <div className="flex flex-col gap-y-4 w-full">
-      <div className="grid sm:grid-cols-2 items-center gap-x-8 gap-y-4 w-full">
-        <div className="flex flex-col gap-y-1">
-          <Heading level="h3" className="!text-sm font-semibold text-neutral-950">
-            Order transfers
-          </Heading>
-          <p className="text-small-regular text-neutral-500">
-            Can&apos;t find the order you are looking for?
-            <br /> Connect an order to your account.
-          </p>
+    <div className="rounded-md border p-5">
+      <h2 className="text-sm font-medium">Order transfers</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Have an order under another email? Request to connect it to this
+        account.
+      </p>
+      <form action={formAction} className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <Field label="Order ID" htmlFor="transfer-order-id" className="flex-1">
+          <Input
+            id="transfer-order-id"
+            name="order_id"
+            placeholder="order_..."
+          />
+        </Field>
+        <div className="sm:pt-6">
+          <SubmitButton variant="outline" size="default">
+            Request transfer
+          </SubmitButton>
         </div>
-        <form
-          action={formAction}
-          className="flex flex-col gap-y-1 sm:items-end"
-        >
-          <div className="flex flex-col gap-y-2 w-full">
-            <Input className="w-full" name="order_id" placeholder="Order ID" />
-            <SubmitButton
-              variant="secondary"
-              size="small"
-              className="w-fit whitespace-nowrap self-end"
-            >
-              Request transfer
-            </SubmitButton>
-          </div>
-        </form>
-      </div>
-      {!state.success && state.error && (
-        <Text className="text-base-regular text-rose-500 text-right">
-          {state.error}
-        </Text>
-      )}
-      {showSuccess && (
-        <div className="flex justify-between p-4 bg-neutral-50 shadow-borders-base w-full self-stretch items-center">
-          <div className="flex gap-x-2 items-center">
-            <CheckCircleMiniSolid className="w-4 h-4 text-emerald-500" />
-            <div className="flex flex-col gap-y-1">
-              <Text className="text-medim-pl text-neutral-950">
-                Transfer for order {state.order?.id} requested
-              </Text>
-              <Text className="text-base-regular text-neutral-600">
-                Transfer request email sent to {state.order?.email}
-              </Text>
-            </div>
-          </div>
-          <IconButton
-            className="h-fit"
-            onClick={() => setShowSuccess(false)}
-          >
-            <XCircleSolid className="w-4 h-4 text-neutral-500" />
-          </IconButton>
-        </div>
+      </form>
+      <ErrorMessage error={state.error} className="mt-3" />
+      {state.success && state.order && (
+        <p className="mt-3 text-sm text-success" role="status">
+          Transfer requested for order {state.order.id}. We emailed{" "}
+          {state.order.email}.
+        </p>
       )}
     </div>
   )

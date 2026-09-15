@@ -1,9 +1,15 @@
+"use client"
+
+import { useActionState } from "react"
+
 import { login } from "@lib/data/customer"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import { storeConfig } from "@/config"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ErrorMessage } from "@/components/common/error-message"
+import { Field } from "@/components/commerce/address-fields"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import Input from "@modules/common/components/input"
-import { useActionState } from "react"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -13,62 +19,72 @@ const Login = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(login, null)
 
   return (
-    <div
-      className="max-w-sm w-full flex flex-col items-center"
-      data-testid="login-page"
-    >
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-8">
-        Sign in to access an enhanced shopping experience.
+    <div className="flex w-full flex-col" data-testid="login-page">
+      <h1 className="text-2xl font-medium tracking-tight">Welcome back</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Sign in to {storeConfig.brand.name} to view orders, addresses and a
+        faster checkout.
       </p>
       {message?.state === "verification_required" && (
-        <div
-          className="w-full mb-6 text-center text-base-regular text-ui-fg-base bg-ui-bg-subtle border border-ui-border-base rounded-rounded p-4"
+        <p
+          className="mt-6 rounded-md border bg-muted px-3 py-3 text-sm"
           data-testid="login-verification-message"
+          role="status"
         >
           We sent a verification link to <strong>{message.email}</strong>.
-          Please verify your email, then sign in.
-        </div>
+          Verify your email, then sign in.
+        </p>
       )}
-      <form className="w-full" action={formAction}>
-        <div className="flex flex-col w-full gap-y-2">
+      <form className="mt-8 space-y-4" action={formAction}>
+        <Field label="Email" htmlFor="login-email">
           <Input
-            label="Email"
+            id="login-email"
             name="email"
             type="email"
-            title="Enter a valid email address."
             autoComplete="email"
             required
             data-testid="email-input"
           />
+        </Field>
+        <Field label="Password" htmlFor="login-password">
           <Input
-            label="Password"
+            id="login-password"
             name="password"
             type="password"
             autoComplete="current-password"
             required
             data-testid="password-input"
           />
+        </Field>
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="link"
+            className="h-auto text-xs text-muted-foreground"
+            onClick={() => setCurrentView(LOGIN_VIEW.FORGOT)}
+          >
+            Forgot password?
+          </Button>
         </div>
         <ErrorMessage
           error={message?.state === "error" ? message.error : null}
           data-testid="login-error-message"
         />
-        <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
+        <SubmitButton className="w-full" data-testid="sign-in-button">
           Sign in
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Not a member?{" "}
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        New here?{" "}
         <button
+          type="button"
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline"
+          className="font-medium text-foreground underline-offset-4 hover:underline"
           data-testid="register-button"
         >
-          Join us
+          Create an account
         </button>
-        .
-      </span>
+      </p>
     </div>
   )
 }

@@ -1,21 +1,31 @@
+import { Metadata } from "next"
+
 import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
-import CartTemplate from "@modules/cart/templates"
-import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { listCartOptions } from "@lib/data/cart"
+import { HttpTypes } from "@medusajs/types"
+import { storeConfig } from "@/config"
+import { CartTemplate } from "@modules/cart/templates"
 
 export const metadata: Metadata = {
-  title: "Cart",
-  description: "View your cart",
+  title: "Bag",
+  description: "Review the items in your bag.",
 }
 
-export default async function Cart() {
-  const cart = await retrieveCart().catch((error) => {
-    console.error(error)
-    return notFound()
-  })
+export default async function CartPage() {
+  const [customer, cart] = await Promise.all([
+    retrieveCustomer().catch(() => null),
+    retrieveCart().catch(() => null),
+  ])
 
-  const customer = await retrieveCustomer()
+  let shippingOptions: HttpTypes.StoreCartShippingOption[] = []
+  if (cart && storeConfig.features.shippingProgress) {
+    shippingOptions = await listCartOptions()
+      .then((res) => res.shipping_options ?? [])
+      .catch(() => [])
+  }
 
-  return <CartTemplate cart={cart} customer={customer} />
+  return (
+    <CartTemplate isSignedIn={!!customer} shippingOptions={shippingOptions} />
+  )
 }

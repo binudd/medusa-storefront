@@ -1,33 +1,19 @@
 "use client"
 
-import { Button } from "@modules/common/components/ui"
-import React from "react"
 import { useFormStatus } from "react-dom"
 
+import { Button, type ButtonProps } from "@/components/ui/button"
+
+/** Submit button that reflects the enclosing `<form action>` pending state. */
 export function SubmitButton({
   children,
-  variant = "primary",
-  size = "medium",
-  className,
-  "data-testid": dataTestId,
-}: {
-  children: React.ReactNode
-  variant?: "primary" | "secondary" | "transparent" | null
-  size?: "small" | "medium" | "large"
-  className?: string
-  "data-testid"?: string
-}) {
+  size = "lg",
+  ...props
+}: Omit<ButtonProps, "type" | "isLoading">) {
   const { pending } = useFormStatus()
 
   return (
-    <Button
-      size={size}
-      className={className}
-      type="submit"
-      isLoading={pending}
-      variant={variant || "primary"}
-      data-testid={dataTestId}
-    >
+    <Button type="submit" size={size} isLoading={pending} {...props}>
       {children}
     </Button>
   )

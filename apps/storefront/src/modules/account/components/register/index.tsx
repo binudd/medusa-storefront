@@ -1,12 +1,14 @@
 "use client"
 
 import { useActionState } from "react"
-import Input from "@modules/common/components/input"
-import { LOGIN_VIEW } from "@modules/account/templates/login-template"
-import ErrorMessage from "@modules/checkout/components/error-message"
-import { SubmitButton } from "@modules/checkout/components/submit-button"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+
 import { signup } from "@lib/data/customer"
+import { LOGIN_VIEW } from "@modules/account/templates/login-template"
+import { storeConfig } from "@/config"
+import { Input } from "@/components/ui/input"
+import { ErrorMessage } from "@/components/common/error-message"
+import { Field } from "@/components/commerce/address-fields"
+import { SubmitButton } from "@modules/checkout/components/submit-button"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -16,101 +18,93 @@ const Register = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(signup, null)
 
   return (
-    <div
-      className="max-w-sm flex flex-col items-center"
-      data-testid="register-page"
-    >
-      <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
-      </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+    <div className="flex w-full flex-col" data-testid="register-page">
+      <h1 className="text-2xl font-medium tracking-tight">Create an account</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Save addresses, track orders and check out faster next time.
       </p>
       {message?.state === "verification_required" && (
-        <div
-          className="w-full mb-4 text-center text-base-regular text-ui-fg-base bg-ui-bg-subtle border border-ui-border-base rounded-rounded p-4"
+        <p
+          className="mt-6 rounded-md border bg-muted px-3 py-3 text-sm"
           data-testid="register-verification-message"
+          role="status"
         >
-          We sent a verification link to <strong>{message.email}</strong>.
-          Please check your inbox to verify your email, then sign in.
-        </div>
+          We sent a verification link to <strong>{message.email}</strong>. Check
+          your inbox, then sign in.
+        </p>
       )}
-      <form className="w-full flex flex-col" action={formAction}>
-        <div className="flex flex-col w-full gap-y-2">
+      <form className="mt-8 space-y-4" action={formAction}>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="First name" htmlFor="register-first-name">
+            <Input
+              id="register-first-name"
+              name="first_name"
+              required
+              autoComplete="given-name"
+              data-testid="first-name-input"
+            />
+          </Field>
+          <Field label="Last name" htmlFor="register-last-name">
+            <Input
+              id="register-last-name"
+              name="last_name"
+              required
+              autoComplete="family-name"
+              data-testid="last-name-input"
+            />
+          </Field>
+        </div>
+        <Field label="Email" htmlFor="register-email">
           <Input
-            label="First name"
-            name="first_name"
-            required
-            autoComplete="given-name"
-            data-testid="first-name-input"
-          />
-          <Input
-            label="Last name"
-            name="last_name"
-            required
-            autoComplete="family-name"
-            data-testid="last-name-input"
-          />
-          <Input
-            label="Email"
+            id="register-email"
             name="email"
             required
             type="email"
             autoComplete="email"
             data-testid="email-input"
           />
+        </Field>
+        <Field label="Phone" optional htmlFor="register-phone">
           <Input
-            label="Phone"
+            id="register-phone"
             name="phone"
             type="tel"
             autoComplete="tel"
             data-testid="phone-input"
           />
+        </Field>
+        <Field label="Password" htmlFor="register-password">
           <Input
-            label="Password"
+            id="register-password"
             name="password"
             required
             type="password"
             autoComplete="new-password"
             data-testid="password-input"
           />
-        </div>
+        </Field>
         <ErrorMessage
           error={message?.state === "error" ? message.error : null}
           data-testid="register-error"
         />
-        <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
-          <LocalizedClientLink
-            href="/content/privacy-policy"
-            className="underline"
-          >
-            Privacy Policy
-          </LocalizedClientLink>{" "}
-          and{" "}
-          <LocalizedClientLink
-            href="/content/terms-of-use"
-            className="underline"
-          >
-            Terms of Use
-          </LocalizedClientLink>
-          .
-        </span>
-        <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+        <p className="text-xs text-muted-foreground">
+          By creating an account you agree to {storeConfig.brand.name}&apos;s
+          privacy and terms notices.
+        </p>
+        <SubmitButton className="w-full" data-testid="register-button">
+          Create account
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Already a member?{" "}
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
         <button
+          type="button"
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="underline"
+          className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Sign in
         </button>
-        .
-      </span>
+      </p>
     </div>
   )
 }

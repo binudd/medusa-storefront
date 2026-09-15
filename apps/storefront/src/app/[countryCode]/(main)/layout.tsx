@@ -1,45 +1,55 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { Metadata } from "next"
 
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
+import { queryKeys } from "@lib/queries/keys"
+import { getQueryClient } from "@lib/queries/query-client"
 import { getBaseURL } from "@lib/util/env"
-import { StoreCartShippingOption } from "@medusajs/types"
-import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
-import Footer from "@modules/layout/templates/footer"
-import Nav from "@modules/layout/templates/nav"
-import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
+import { HttpTypes } from "@medusajs/types"
+import { CartDrawer } from "@/components/layout/cart-drawer"
+import { CartMismatchBanner } from "@/components/layout/cart-mismatch-banner"
+import { Footer } from "@/components/layout/footer"
+import { Header } from "@/components/layout/header"
+import { SearchCommand } from "@/components/layout/search-command"
+import { storeConfig } from "@/config"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const customer = await retrieveCustomer()
-  const cart = await retrieveCart()
-  let shippingOptions: StoreCartShippingOption[] = []
+  const [customer, cart] = await Promise.all([
+    retrieveCustomer(),
+    retrieveCart(),
+  ])
 
-  if (cart) {
-    const { shipping_options } = await listCartOptions()
-
-    shippingOptions = shipping_options
+  let shippingOptions: HttpTypes.StoreCartShippingOption[] = []
+  if (cart && storeConfig.features.shippingProgress) {
+    shippingOptions = await listCartOptions()
+      .then((res) => res.shipping_options ?? [])
+      .catch(() => [])
   }
 
-  return (
-    <>
-      <Nav />
-      {customer && cart && (
-        <CartMismatchBanner customer={customer} cart={cart} />
-      )}
+  // Seed the client cart query with the server-rendered cart so the drawer
+  // and header count are correct on first paint without a second request.
+  const queryClient = getQueryClient()
+  queryClient.setQueryData(queryKeys.cart.detail(), cart)
 
-      {cart && (
-        <FreeShippingPriceNudge
-          variant="popup"
-          cart={cart}
-          shippingOptions={shippingOptions}
-        />
-      )}
-      {props.children}
-      <Footer />
-    </>
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="flex min-h-dvh flex-col">
+        <Header />
+        {customer && cart && (
+          <CartMismatchBanner customer={customer} cart={cart} />
+        )}
+        <main id="main" className="flex-1">
+          {props.children}
+        </main>
+        <Footer />
+      </div>
+      <CartDrawer shippingOptions={shippingOptions} />
+      {storeConfig.features.search && <SearchCommand />}
+    </HydrationBoundary>
   )
 }

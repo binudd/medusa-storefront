@@ -1,7 +1,4 @@
-import { CreditCard } from "@medusajs/icons"
-import Bancontact from "@modules/common/icons/bancontact"
-import Ideal from "@modules/common/icons/ideal"
-import PayPal from "@modules/common/icons/paypal"
+import { CreditCard, Landmark, Wallet } from "lucide-react"
 import React from "react"
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
@@ -19,24 +16,22 @@ export const paymentInfoMap: Record<
   },
   "pp_stripe-ideal_stripe": {
     title: "iDeal",
-    icon: <Ideal />,
+    icon: <Landmark />,
   },
   "pp_stripe-bancontact_stripe": {
     title: "Bancontact",
-    icon: <Bancontact />,
+    icon: <Landmark />,
   },
   pp_paypal_paypal: {
     title: "PayPal",
-    icon: <PayPal />,
+    icon: <Wallet />,
   },
   pp_system_default: {
-    title: "Manual Payment",
+    title: "Manual payment",
     icon: <CreditCard />,
   },
-  // Add more payment providers here
 }
 
-// This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers
 export const isStripeLike = (providerId?: string) => {
   return (
     providerId?.startsWith("pp_stripe_") || providerId?.startsWith("pp_medusa-")
@@ -46,11 +41,11 @@ export const isStripeLike = (providerId?: string) => {
 export const isPaypal = (providerId?: string) => {
   return providerId?.startsWith("pp_paypal")
 }
+
 export const isManual = (providerId?: string) => {
   return providerId?.startsWith("pp_system_default")
 }
 
-// Add currencies that don't need to be divided by 100
 export const noDivisionCurrencies = [
   "krw",
   "jpy",

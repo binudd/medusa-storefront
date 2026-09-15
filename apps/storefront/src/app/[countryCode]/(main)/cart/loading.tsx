@@ -1,5 +1,5 @@
-import SkeletonCartPage from "@modules/skeletons/templates/skeleton-cart-page"
+import { CartPageSkeleton } from "@modules/cart/templates/cart-page-skeleton"
 
 export default function Loading() {
-  return <SkeletonCartPage />
+  return <CartPageSkeleton />
 }

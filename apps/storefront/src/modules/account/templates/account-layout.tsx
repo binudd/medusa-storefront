@@ -1,9 +1,10 @@
 import React from "react"
 
-import UnderlineLink from "@modules/common/components/interactive-link"
+import { storeConfig } from "@/config"
+import { HttpTypes } from "@medusajs/types"
+import { LocalizedLink } from "@/components/common/localized-link"
 
 import AccountNav from "../components/account-nav"
-import { HttpTypes } from "@medusajs/types"
 
 interface AccountLayoutProps {
   customer: HttpTypes.StoreCustomer | null
@@ -15,27 +16,34 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex-1 small:py-12" data-testid="account-page">
-      <div className="flex-1 content-container h-full max-w-5xl mx-auto bg-white flex flex-col">
-        <div className="grid grid-cols-1  small:grid-cols-[240px_1fr] py-12">
-          <div>{customer && <AccountNav customer={customer} />}</div>
-          <div className="flex-1">{children}</div>
+    <div className="content-container py-10 lg:py-16" data-testid="account-page">
+      {customer ? (
+        <div className="grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
+          <AccountNav customer={customer} />
+          <div className="min-w-0">{children}</div>
         </div>
-        <div className="flex flex-col small:flex-row items-end justify-between small:border-t border-gray-200 py-12 gap-8">
-          <div>
-            <h3 className="text-xl-semi mb-4">Got questions?</h3>
-            <span className="txt-medium">
-              You can find frequently asked questions and answers on our
-              customer service page.
-            </span>
-          </div>
-          <div>
-            <UnderlineLink href="/customer-service">
-              Customer Service
-            </UnderlineLink>
-          </div>
-        </div>
-      </div>
+      ) : (
+        <div className="mx-auto w-full max-w-md py-6">{children}</div>
+      )}
+      <aside className="mt-16 border-t pt-8 text-sm text-muted-foreground">
+        <p className="font-medium text-foreground">Need help?</p>
+        <p className="mt-1 max-w-xl">
+          Questions about an order or a return can be sent to{" "}
+          <a
+            href={`mailto:${storeConfig.brand.supportEmail}`}
+            className="underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {storeConfig.brand.supportEmail}
+          </a>
+          .
+        </p>
+        <LocalizedLink
+          href="/store"
+          className="mt-3 inline-block underline-offset-4 hover:text-foreground hover:underline"
+        >
+          Continue shopping
+        </LocalizedLink>
+      </aside>
     </div>
   )
 }

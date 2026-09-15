@@ -379,3 +379,73 @@ export const updateCustomerAddress = async (
       return { success: false, error: err.toString() }
     })
 }
+
+export type PasswordResetState =
+  | { state: "success" }
+  | { state: "error"; error: string }
+  | null
+
+/**
+ * Requests a password-reset email. Always reports success so the form cannot
+ * be used to probe whether an email is registered.
+ */
+export async function requestPasswordReset(
+  _currentState: unknown,
+  formData: FormData
+): Promise<PasswordResetState> {
+  const email = formData.get("email") as string
+
+  if (!email) {
+    return { state: "error", error: "Enter the email for your account." }
+  }
+
+  try {
+    await sdk.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    })
+  } catch {
+    // Swallow lookup failures: the customer still sees the same confirmation.
+  }
+
+  return { state: "success" }
+}
+
+export async function updatePasswordWithToken(
+  _currentState: unknown,
+  formData: FormData
+): Promise<PasswordResetState> {
+  const token = formData.get("token") as string
+  const password = formData.get("password") as string
+  const confirm = formData.get("confirm_password") as string
+
+  if (!token) {
+    return {
+      state: "error",
+      error: "This reset link is invalid or has expired.",
+    }
+  }
+
+  if (!password || password.length < 8) {
+    return {
+      state: "error",
+      error: "Password must be at least 8 characters.",
+    }
+  }
+
+  if (password !== confirm) {
+    return { state: "error", error: "Passwords do not match." }
+  }
+
+  try {
+    await sdk.auth.updateProvider(
+      "customer",
+      "emailpass",
+      { password },
+      token
+    )
+  } catch (error) {
+    return { state: "error", error: String(error) }
+  }
+
+  return { state: "success" }
+}

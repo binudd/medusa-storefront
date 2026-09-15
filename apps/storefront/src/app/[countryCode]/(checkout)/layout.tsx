@@ -1,43 +1,56 @@
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import ChevronDown from "@modules/common/icons/chevron-down"
-import MedusaCTA from "@modules/layout/components/medusa-cta"
+import { ChevronLeft, Lock } from "lucide-react"
 
-export default function CheckoutLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+import { storeConfig } from "@/config"
+import { LocalizedLink } from "@/components/common/localized-link"
+import { Logo } from "@/components/layout/logo"
+
+/**
+ * Distraction-free checkout chrome: back link, logo and a trust cue. No
+ * primary navigation so customers stay focused on completing the order.
+ */
+export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-full bg-white relative small:min-h-screen">
-      <div className="h-16 bg-white border-b ">
-        <nav className="flex h-full items-center content-container justify-between">
-          <LocalizedClientLink
+    <div className="flex min-h-dvh flex-col bg-background">
+      <header className="border-b">
+        <nav
+          className="content-container flex h-16 items-center justify-between"
+          aria-label="Checkout"
+        >
+          <LocalizedLink
             href="/cart"
-            className="text-small-semi text-ui-fg-base flex items-center gap-x-2 uppercase flex-1 basis-0"
+            className="flex flex-1 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             data-testid="back-to-cart-link"
           >
-            <ChevronDown className="rotate-90" size={16} />
-            <span className="mt-px hidden small:block txt-compact-plus text-ui-fg-subtle hover:text-ui-fg-base ">
-              Back to shopping cart
-            </span>
-            <span className="mt-px block small:hidden txt-compact-plus text-ui-fg-subtle hover:text-ui-fg-base">
-              Back
-            </span>
-          </LocalizedClientLink>
-          <LocalizedClientLink
-            href="/"
-            className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
-            data-testid="store-link"
-          >
-            Medusa Store
-          </LocalizedClientLink>
-          <div className="flex-1 basis-0" />
+            <ChevronLeft className="size-4" aria-hidden />
+            <span className="hidden sm:inline">Back to bag</span>
+            <span className="sm:hidden">Back</span>
+          </LocalizedLink>
+          <Logo />
+          <div className="flex flex-1 items-center justify-end gap-1.5 text-xs text-muted-foreground">
+            <Lock className="size-3.5" aria-hidden />
+            <span className="hidden sm:inline">Secure checkout</span>
+          </div>
         </nav>
-      </div>
-      <div className="relative" data-testid="checkout-container">{children}</div>
-      <div className="py-4 w-full flex items-center justify-center">
-        <MedusaCTA />
-      </div>
+      </header>
+      <main id="main" className="flex-1" data-testid="checkout-container">
+        {children}
+      </main>
+      <footer className="border-t py-6">
+        <div className="content-container flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground sm:flex-row">
+          <p>
+            © {new Date().getFullYear()} {storeConfig.brand.name}
+          </p>
+          <ul className="flex gap-4">
+            {storeConfig.footer.legal.map((link) => (
+              <li key={link.href}>
+                <LocalizedLink href={link.href} className="hover:text-foreground">
+                  {link.label}
+                </LocalizedLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -1,57 +1,49 @@
 "use client"
 
-import { Heading, Text, clx } from "@modules/common/components/ui"
-
-import PaymentButton from "../payment-button"
-import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import { useSearchParams } from "next/navigation"
 
-const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
+import { storeConfig } from "@/config"
+import { LocalizedLink } from "@/components/common/localized-link"
+
+import { CheckoutStep } from "../checkout-step"
+import { PaymentButton } from "../payment-button"
+
+export function Review({ cart }: { cart: HttpTypes.StoreCart }) {
   const searchParams = useSearchParams()
-
   const isOpen = searchParams.get("step") === "review"
 
-  const paidByGiftcard = !!(
-    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
-  )
+  const giftCards = (cart as unknown as { gift_cards?: unknown[] }).gift_cards
+  const paidByGiftcard = Boolean(giftCards?.length) && cart.total === 0
 
   const previousStepsCompleted =
     cart.shipping_address &&
     (cart.shipping_methods?.length ?? 0) > 0 &&
     (cart.payment_collection || paidByGiftcard)
 
+  const legal = storeConfig.footer.legal
+
   return (
-    <div className="bg-white">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
-          className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
-            {
-              "opacity-50 pointer-events-none select-none": !isOpen,
-            }
-          )}
-        >
-          Review
-        </Heading>
-      </div>
+    <CheckoutStep index={4} title="Review" isOpen={isOpen} isComplete={false}>
       {isOpen && previousStepsCompleted && (
-        <>
-          <div className="flex items-start gap-x-1 w-full mb-6">
-            <div className="w-full">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                By clicking the Place Order button, you confirm that you have
-                read, understand and accept our Terms of Use, Terms of Sale and
-                Returns Policy and acknowledge that you have read Medusa
-                Store&apos;s Privacy Policy.
-              </Text>
-            </div>
-          </div>
+        <div className="space-y-6">
+          <p className="text-sm text-muted-foreground">
+            By placing your order you confirm that you have read and accept our{" "}
+            {legal.length > 0
+              ? legal.map((link, i) => (
+                  <span key={link.href}>
+                    <LocalizedLink href={link.href} className="underline underline-offset-4 hover:text-foreground">
+                      {link.label}
+                    </LocalizedLink>
+                    {i < legal.length - 2 ? ", " : i === legal.length - 2 ? " and " : ""}
+                  </span>
+                ))
+              : "terms of sale and privacy policy"}
+            .
+          </p>
           <PaymentButton cart={cart} data-testid="submit-order-button" />
-        </>
+        </div>
       )}
-    </div>
+    </CheckoutStep>
   )
 }
-
-export default Review

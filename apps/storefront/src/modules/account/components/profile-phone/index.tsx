@@ -1,30 +1,25 @@
 "use client"
 
-import React, { useEffect, useActionState } from "react";
+import { useActionState, useEffect, useState } from "react"
 
-import Input from "@modules/common/components/input"
-
-import AccountInfo from "../account-info"
-import { HttpTypes } from "@medusajs/types"
 import { updateCustomer } from "@lib/data/customer"
+import { HttpTypes } from "@medusajs/types"
+import { Input } from "@/components/ui/input"
+import { ErrorMessage } from "@/components/common/error-message"
+import { Field } from "@/components/commerce/address-fields"
+import { SubmitButton } from "@modules/checkout/components/submit-button"
 
 type MyInformationProps = {
   customer: HttpTypes.StoreCustomer
 }
 
-const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
-  const [successState, setSuccessState] = React.useState(false)
-
+const ProfilePhone: React.FC<MyInformationProps> = ({ customer }) => {
   const updateCustomerPhone = async (
     _currentState: Record<string, unknown>,
     formData: FormData
   ) => {
-    const customer = {
-      phone: formData.get("phone") as string,
-    }
-
     try {
-      await updateCustomer(customer)
+      await updateCustomer({ phone: formData.get("phone") as string })
       return { success: true, error: null }
     } catch (error) {
       return { success: false, error: String(error) }
@@ -35,40 +30,36 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
     error: null as string | null,
     success: false,
   })
-
-  const clearState = () => {
-    setSuccessState(false)
-  }
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    setSuccessState(state.success)
+    if (state.success) setSaved(true)
   }, [state])
 
   return (
-    <form action={formAction} className="w-full">
-      <AccountInfo
-        label="Phone"
-        currentInfo={`${customer.phone}`}
-        isSuccess={successState}
-        isError={!!state.error}
-        errorMessage={state.error || undefined}
-        clearState={clearState}
-        data-testid="account-phone-editor"
-      >
-        <div className="grid grid-cols-1 gap-y-2">
-          <Input
-            label="Phone"
-            name="phone"
-            type="phone"
-            autoComplete="phone"
-            required
-            defaultValue={customer.phone ?? ""}
-            data-testid="phone-input"
-          />
-        </div>
-      </AccountInfo>
+    <form action={formAction} className="space-y-4" data-testid="account-phone-editor">
+      <h2 className="text-sm font-medium">Phone</h2>
+      <Field label="Phone" htmlFor="profile-phone">
+        <Input
+          id="profile-phone"
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          defaultValue={customer.phone ?? ""}
+          data-testid="phone-input"
+        />
+      </Field>
+      <ErrorMessage error={state.error} />
+      {saved && (
+        <p className="text-sm text-success" role="status">
+          Phone updated.
+        </p>
+      )}
+      <SubmitButton size="default" data-testid="save-button">
+        Save phone
+      </SubmitButton>
     </form>
   )
 }
 
-export default ProfileEmail
+export default ProfilePhone

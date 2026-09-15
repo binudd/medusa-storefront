@@ -1,8 +1,10 @@
 "use client"
 
 import { acceptTransferRequest, declineTransferRequest } from "@lib/data/orders"
-import { Button, Text } from "@modules/common/components/ui"
 import { useState } from "react"
+
+import { Button } from "@/components/ui/button"
+import { ErrorMessage } from "@/components/common/error-message"
 
 type TransferStatus = "pending" | "success" | "error"
 
@@ -11,7 +13,7 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
   const [status, setStatus] = useState<{
     accept: TransferStatus | null
     decline: TransferStatus | null
-  } | null>({
+  }>({
     accept: null,
     decline: null,
   })
@@ -19,9 +21,7 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
   const acceptTransfer = async () => {
     setStatus({ accept: "pending", decline: null })
     setErrorMessage(null)
-
     const { success, error } = await acceptTransferRequest(id, token)
-
     if (error) setErrorMessage(error)
     setStatus({ accept: success ? "success" : "error", decline: null })
   }
@@ -29,51 +29,43 @@ const TransferActions = ({ id, token }: { id: string; token: string }) => {
   const declineTransfer = async () => {
     setStatus({ accept: null, decline: "pending" })
     setErrorMessage(null)
-
     const { success, error } = await declineTransferRequest(id, token)
-
     if (error) setErrorMessage(error)
     setStatus({ accept: null, decline: success ? "success" : "error" })
   }
 
   return (
-    <div className="flex flex-col gap-y-4">
-      {status?.accept === "success" && (
-        <Text className="text-emerald-500">
-          Order transferred successfully!
-        </Text>
+    <div className="flex flex-col gap-4">
+      {status.accept === "success" && (
+        <p className="text-sm text-success" role="status">
+          Order transferred successfully.
+        </p>
       )}
-      {status?.decline === "success" && (
-        <Text className="text-emerald-500">
-          Order transfer declined successfully!
-        </Text>
+      {status.decline === "success" && (
+        <p className="text-sm text-success" role="status">
+          Order transfer declined.
+        </p>
       )}
-      {status?.accept !== "success" && status?.decline !== "success" && (
-        <div className="flex gap-x-4">
+      {status.accept !== "success" && status.decline !== "success" && (
+        <div className="flex flex-wrap gap-3">
           <Button
-            size="large"
             onClick={acceptTransfer}
-            isLoading={status?.accept === "pending"}
-            disabled={
-              status?.accept === "pending" || status?.decline === "pending"
-            }
+            isLoading={status.accept === "pending"}
+            disabled={status.accept === "pending" || status.decline === "pending"}
           >
             Accept transfer
           </Button>
           <Button
-            size="large"
-            variant="secondary"
+            variant="outline"
             onClick={declineTransfer}
-            isLoading={status?.decline === "pending"}
-            disabled={
-              status?.accept === "pending" || status?.decline === "pending"
-            }
+            isLoading={status.decline === "pending"}
+            disabled={status.accept === "pending" || status.decline === "pending"}
           >
             Decline transfer
           </Button>
         </div>
       )}
-      {errorMessage && <Text className="text-red-500">{errorMessage}</Text>}
+      <ErrorMessage error={errorMessage} />
     </div>
   )
 }

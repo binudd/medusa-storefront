@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { Button } from "@modules/common/components/ui"
+
 import { confirmEmailVerification } from "@lib/data/customer"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { LocalizedLink } from "@/components/common/localized-link"
 
 type VerificationState = "verifying" | "success" | "error"
 
@@ -12,14 +14,10 @@ const VerifyAccount = () => {
   const searchParams = useSearchParams()
   const token = searchParams.get("token")
   const [state, setState] = useState<VerificationState>("verifying")
-  // Guard against the effect running twice in React Strict Mode, which would
-  // consume the single-use token before the customer sees the result.
   const confirmed = useRef(false)
 
   useEffect(() => {
-    if (confirmed.current) {
-      return
-    }
+    if (confirmed.current) return
     confirmed.current = true
 
     if (!token) {
@@ -34,37 +32,35 @@ const VerifyAccount = () => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center text-center gap-y-4"
+      className="mx-auto max-w-md py-16 text-center"
       data-testid="verify-account-page"
     >
-      <h1 className="text-large-semi uppercase">Email verification</h1>
-
+      <h1 className="text-2xl font-medium tracking-tight">Email verification</h1>
       {state === "verifying" && (
-        <p className="text-base-regular text-ui-fg-base">
-          Verifying your email...
-        </p>
+        <div className="mt-6 space-y-3">
+          <Skeleton className="mx-auto h-4 w-48" />
+          <p className="text-sm text-muted-foreground">Verifying your email…</p>
+        </div>
       )}
-
       {state === "success" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
-            Your email is verified. You can now sign in to your account.
+          <p className="mt-4 text-sm text-muted-foreground">
+            Your email is verified. You can now sign in.
           </p>
-          <LocalizedClientLink href="/account">
-            <Button variant="primary">Go to sign in</Button>
-          </LocalizedClientLink>
+          <Button asChild className="mt-6">
+            <LocalizedLink href="/account">Go to sign in</LocalizedLink>
+          </Button>
         </>
       )}
-
       {state === "error" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
+          <p className="mt-4 text-sm text-muted-foreground">
             This verification link is invalid or has expired. Sign in to receive
-            a new verification email.
+            a new one.
           </p>
-          <LocalizedClientLink href="/account">
-            <Button variant="secondary">Go to sign in</Button>
-          </LocalizedClientLink>
+          <Button asChild variant="outline" className="mt-6">
+            <LocalizedLink href="/account">Go to sign in</LocalizedLink>
+          </Button>
         </>
       )}
     </div>
