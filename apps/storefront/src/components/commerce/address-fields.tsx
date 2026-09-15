@@ -1,6 +1,5 @@
 "use client"
 
-import { HttpTypes } from "@medusajs/types"
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -227,20 +226,4 @@ export function Field({
       {children}
     </div>
   )
-}
-
-/** One-line address for summaries. */
-export function formatAddressLine(
-  address?: HttpTypes.StoreCartAddress | HttpTypes.StoreCustomerAddress | null
-) {
-  if (!address) return ""
-  return [
-    address.address_1,
-    address.address_2,
-    [address.postal_code, address.city].filter(Boolean).join(" "),
-    address.province,
-    address.country_code?.toUpperCase(),
-  ]
-    .filter(Boolean)
-    .join(", ")
 }

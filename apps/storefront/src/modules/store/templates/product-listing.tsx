@@ -129,7 +129,7 @@ export async function ProductListing({
         {childLinks && childLinks.length > 0 && (
           <ul className="flex flex-wrap gap-2 pt-1">
             {childLinks.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.label}:${link.href}`}>
                 <Button asChild variant="outline" size="sm">
                   <LocalizedLink href={link.href}>{link.label}</LocalizedLink>
                 </Button>

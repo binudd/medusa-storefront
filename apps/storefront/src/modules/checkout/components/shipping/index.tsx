@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Skeleton } from "@/components/ui/skeleton"
-import { formatAddressLine } from "@/components/commerce/address-fields"
+import { formatAddressLine } from "@lib/util/format-address-line"
 import { ErrorMessage } from "@/components/common/error-message"
 
 import { CheckoutStep } from "../checkout-step"

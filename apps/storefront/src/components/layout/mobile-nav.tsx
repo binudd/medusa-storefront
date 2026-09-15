@@ -76,7 +76,7 @@ export function MobileNav({
         <nav className="flex-1 overflow-y-auto px-5 py-2" aria-label="Mobile">
           <ul className="divide-y">
             {storeConfig.navigation.primary.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.label}:${link.href}`}>
                 <LocalizedLink
                   href={link.href}
                   onClick={close}

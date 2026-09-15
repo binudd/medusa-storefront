@@ -42,7 +42,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
           </p>
           <ul className="flex gap-4">
             {storeConfig.footer.legal.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.label}:${link.href}`}>
                 <LocalizedLink href={link.href} className="hover:text-foreground">
                   {link.label}
                 </LocalizedLink>

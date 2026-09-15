@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { formatAddressLine } from "@/components/commerce/address-fields"
+import { formatAddressLine } from "@lib/util/format-address-line"
 
 type AddressSelectProps = {
   addresses: HttpTypes.StoreCustomerAddress[]

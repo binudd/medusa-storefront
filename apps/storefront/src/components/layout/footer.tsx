@@ -96,7 +96,7 @@ export async function Footer() {
             </span>
             {footer.legal.map((link) => (
               <LocalizedLink
-                key={link.href + link.label}
+                key={`${link.label}:${link.href}`}
                 href={link.href}
                 className="transition-colors hover:text-foreground"
               >

@@ -31,7 +31,7 @@ export function Review({ cart }: { cart: HttpTypes.StoreCart }) {
             By placing your order you confirm that you have read and accept our{" "}
             {legal.length > 0
               ? legal.map((link, i) => (
-                  <span key={link.href}>
+                  <span key={`${link.label}:${link.href}`}>
                     <LocalizedLink href={link.href} className="underline underline-offset-4 hover:text-foreground">
                       {link.label}
                     </LocalizedLink>

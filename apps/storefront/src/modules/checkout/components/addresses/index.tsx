@@ -7,6 +7,7 @@ import { useActionState } from "react"
 
 import { setAddresses } from "@lib/data/cart"
 import compareAddresses from "@lib/util/compare-addresses"
+import { formatAddressLine } from "@lib/util/format-address-line"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,7 +17,6 @@ import {
   type AddressValues,
   emptyAddressValues,
   Field,
-  formatAddressLine,
 } from "@/components/commerce/address-fields"
 import { ErrorMessage } from "@/components/common/error-message"
 

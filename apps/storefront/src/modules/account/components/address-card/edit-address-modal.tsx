@@ -16,11 +16,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { formatAddressLine } from "@lib/util/format-address-line"
 import { ErrorMessage } from "@/components/common/error-message"
 import {
   AddressFields,
   emptyAddressValues,
-  formatAddressLine,
   toCountryOptions,
   type AddressFieldKey,
   type AddressValues,

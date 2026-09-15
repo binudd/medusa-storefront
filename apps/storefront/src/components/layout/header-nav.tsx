@@ -31,7 +31,7 @@ export function HeaderNav({ categories, collections }: NavigationData) {
     <NavigationMenu className="hidden lg:flex" aria-label="Primary">
       <NavigationMenuList>
         {storeConfig.navigation.primary.map((link) => (
-          <NavigationMenuItem key={link.href}>
+          <NavigationMenuItem key={`${link.label}:${link.href}`}>
             <NavigationMenuLink asChild>
               <LocalizedLink
                 href={link.href}

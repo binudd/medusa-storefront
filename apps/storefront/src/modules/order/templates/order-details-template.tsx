@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { LocalizedLink } from "@/components/common/localized-link"
 import { CartTotals } from "@/components/commerce/cart-totals"
-import { formatAddressLine } from "@/components/commerce/address-fields"
+import { formatAddressLine } from "@lib/util/format-address-line"
 import { OrderLineItem } from "@/components/commerce/order-line-item"
 
 type OrderDetailsTemplateProps = {
