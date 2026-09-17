@@ -10,7 +10,7 @@ import type { StoreConfig } from "./types"
  */
 export const storeConfig: StoreConfig = {
   brand: {
-    name: "Atelier",
+    name: "Psydady",
     tagline: "Considered goods for everyday life",
     description:
       "A curated collection of thoughtfully designed products, made to last.",
