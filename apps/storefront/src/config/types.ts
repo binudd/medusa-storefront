@@ -107,16 +107,6 @@ export type SocialLink = {
   href: string
 }
 
-export type HeroConfig = {
-  eyebrow?: string
-  title: string
-  subtitle?: string
-  cta: { label: string; href: string }
-  secondaryCta?: { label: string; href: string }
-  /** Public URL or `/public` path. When absent, a tinted surface is used. */
-  image?: { src: string; alt: string }
-}
-
 export type EditorialConfig = {
   eyebrow?: string
   title: string
@@ -140,8 +130,9 @@ export type ValuePropConfig = {
   icon: "truck" | "refresh" | "shield" | "sparkles" | "leaf" | "headset"
 }
 
+/** Homepage sections. `hero` loads content from GET /store/hero-banners. */
 export type HomeSection =
-  | { type: "hero"; config: HeroConfig }
+  | { type: "hero" }
   | { type: "value-props"; items: ValuePropConfig[] }
   | {
       type: "featured-collections"

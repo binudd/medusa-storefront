@@ -89,17 +89,7 @@ export const storeConfig: StoreConfig = {
   },
   home: {
     sections: [
-      {
-        type: "hero",
-        config: {
-          eyebrow: "New season",
-          title: "Made to be lived in",
-          subtitle:
-            "Quiet, considered pieces designed to last well beyond the season.",
-          cta: { label: "Shop the collection", href: "/store" },
-          secondaryCta: { label: "Our story", href: "/store" },
-        },
-      },
+      { type: "hero" },
       {
         type: "value-props",
         items: [

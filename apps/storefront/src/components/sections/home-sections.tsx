@@ -7,7 +7,8 @@ import { ProductGridSkeleton } from "@/components/commerce/product-grid"
 
 import { Editorial } from "./editorial"
 import { FeaturedCollections } from "./featured-collections"
-import { Hero } from "./hero"
+import { HeroBannerSection } from "./hero-banner-section"
+import { HeroBannerSkeleton } from "./hero-banner"
 import { NewsletterSection } from "./newsletter-section"
 import { ProductRail } from "./product-rail"
 import { PromoTiles } from "./promo-tiles"
@@ -44,7 +45,11 @@ function renderSection(
 
   switch (section.type) {
     case "hero":
-      return <Hero key={key} config={section.config} />
+      return (
+        <Suspense key={key} fallback={<HeroBannerSkeleton />}>
+          <HeroBannerSection />
+        </Suspense>
+      )
     case "value-props":
       return <ValueProps key={key} items={section.items} />
     case "featured-collections":
